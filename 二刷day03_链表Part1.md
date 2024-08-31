@@ -204,3 +204,84 @@ public:
  */
 ```
 
+### 三、翻转链表
+
+#### 1、主要思想
+
+1. 将每个节点依次往回指；
+2. 但一旦节点回指，则切断了向后的途径，所以要增加一个指针指向回指节点的下一个节点；
+
+#### 2、代码
+
+1. 自敲：定义三个节点指针，优点在于减少每次函数调用的开销，缺点在于需要先处理少于两个元素的情况；
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    void printList(ListNode* head) {
+        ListNode* curNode = head;
+        while (curNode != nullptr) {
+            printf("%d->", curNode->val);
+            curNode = curNode->next;
+        }
+        printf("\n");
+    }
+
+    ListNode* reverseList(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
+        ListNode* left = nullptr;
+        ListNode* mid = head;
+        ListNode* right = head->next;
+
+        while (mid != nullptr) {
+            mid->next = left;
+            // printList(left);
+
+            left = mid;
+            mid = right;
+            if (right != nullptr) {
+                right = right->next;
+            }
+        }
+        // printList(left);
+        return left;
+    }
+};
+```
+
+2. 参考：利用tmp节点暂存后继节点（相当于暂存right）；
+
+```c++
+class Solution
+{
+public:
+    ListNode *reverseList(ListNode *head)
+    {
+        ListNode *cur = head;
+        ListNode *pre = NULL;
+
+        while (cur != nullptr)
+        {
+            ListNode *tmp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = tmp;
+        }
+        return pre;
+    }
+};
+```
+
+### 
