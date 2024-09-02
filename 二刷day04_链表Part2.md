@@ -329,3 +329,92 @@ public:
 };
 ```
 
+### 八、回文链表
+
+#### 1、思路
+
+1. copy并反转整个字符串，与原字符串逐节点比较；
+
+#### 2、注意点
+
+#### 3、代码
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    void printList(ListNode* head) {
+        ListNode* curNode = head;
+        while (curNode != nullptr) {
+            printf("%d->", curNode->val);
+            curNode = curNode->next;
+        }
+    }
+
+    ListNode* copyList(ListNode* srcHead) {
+        ListNode* copyListHead = new ListNode(srcHead->val);
+        ListNode* curNode = srcHead;
+        ListNode* copyNode = copyListHead;
+        while (curNode->next != nullptr) {
+            copyNode->next = new ListNode(curNode->next->val);
+            copyNode = copyNode->next;
+            curNode = curNode->next;
+        }
+        return copyListHead;
+    }
+
+    ListNode* reverseList(ListNode* srcHead) {
+        ListNode* frontNode = nullptr;
+        ListNode* curNode = srcHead;
+        ListNode* tmpNode;
+        while (curNode != nullptr) {
+            tmpNode = curNode->next;
+            curNode->next = frontNode;
+            frontNode = curNode;
+            curNode = tmpNode;
+        }
+        return frontNode;
+    }
+
+    bool cmpList(ListNode* head1, ListNode* head2) {
+        ListNode* curNode1 = head1;
+        ListNode* curNode2 = head2;
+
+        bool nodeEqual = ((curNode1 != nullptr) && (curNode2 != nullptr) &&
+                          (curNode1->val == curNode2->val));
+
+        while ((curNode1 != nullptr) && (curNode2 != nullptr) &&
+               (curNode1->val == curNode2->val)) {
+
+            curNode1 = curNode1->next;
+            curNode2 = curNode2->next;
+        }
+
+        if (curNode1 == nullptr && curNode2 == nullptr) {
+            return true;
+        }
+        return false;
+    }
+
+    bool isPalindrome(ListNode* head) {
+
+        ListNode* copyListHead = copyList(head);
+        // printList(copyListHead);
+        // cout << endl;
+
+        ListNode* reverseListHead = reverseList(copyListHead);
+        // printList(reverseListHead);
+
+        return cmpList(head, reverseListHead);
+    }
+};
+```
