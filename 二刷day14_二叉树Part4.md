@@ -934,4 +934,165 @@ public:
         return root;
     }
 };
+=======
+### 十一、404.左叶子之和
+
+[404. 左叶子之和 - 力扣（LeetCode）](https://leetcode.cn/problems/sum-of-left-leaves/description/)
+
+[代码随想录 (programmercarl.com)](https://programmercarl.com/0404.左叶子之和.html)
+
+#### 1、递归思路
+
+1. 该题可以看成**逐层向上报告**左叶子之和，最后在根节点进行统计，因此是以根节点为基点的遍历，采用后序遍历；
+2. **递归三部曲：**
+    1. 参数：传入根节点；返回值：传入树的左叶子之和；
+    2. 终止条件：当前节点是叶子节点或空节点，return 0；
+    3. 递归调用：后序遍历
+        - **左节点（关键处理部分）：如果左节点就是左叶子，则向上报告自己的值；否则说明左节点拥有一棵左子树，则去找自己的左叶子和， 再向上报告；**
+        - 右节点：去找自己的左叶子和；
+        - 中间节点：将左节点和右节点报告的值相加，返回；
+
+#### 2、迭代思路
+
+1. 迭代遍历每个节点，找到有左叶子的节点则返回；
+2. 可以采用层序遍历，思路简单清晰；
+
+#### 3、代码
+
+##### （1）一刷
+
+1. **递归**
+
+    ```c++
+    /**
+     * Definition for a binary tree node.
+     * struct TreeNode {
+     *     int val;
+     *     TreeNode *left;
+     *     TreeNode *right;
+     *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+     *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+     *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+     * right(right) {}
+     * };
+     */
+    class Solution {
+    public:
+        int sumOfLeftLeaves(TreeNode* root) {
+    
+            // 遇到空节点
+            if (!root) {
+                return 0;
+            }
+            // 遇到叶子节点
+            if (!root->left && !root->right) {
+                return 0;
+            }
+    
+            int left_sum = 0;
+            int right_sum = 0;
+            // 逐层向上报告左叶子之和，考虑后序遍历：左-右-中
+            // 左节点
+            if (root->left && !root->left->left &&
+                !root->left->right) // 如果发现我的的左节点是左叶子
+            {
+                left_sum = root->left->val; // 那么它报告给我的和就是它自己的值
+            } else // 否则说明它是左子树，让它去找左叶子之和
+            {
+                left_sum =
+                    sumOfLeftLeaves(root->left); // 让左节点去找自己的左叶子之和
+            }
+    
+            // 右节点
+            right_sum =
+                sumOfLeftLeaves(root->right); // 让右节点去找自己的左叶子之和
+    
+            // 中间节点
+            int sum = left_sum + right_sum; // 左右子树的左叶子和相加，向上报告
+            return sum;
+        }
+    };
+```
+
+2. **迭代**
+
+    ```c++
+    /**
+     * Definition for a binary tree node.
+     * struct TreeNode {
+     *     int val;
+     *     TreeNode *left;
+     *     TreeNode *right;
+     *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+     *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+     *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+     * right(right) {}
+     * };
+     */
+    class Solution {
+    public:
+        int sumOfLeftLeaves(TreeNode* root) {
+    
+            //层序遍历每个节点，如果找到左叶子就加入结果中
+            queue<TreeNode*> que;
+            int sum=0;
+    
+            if(root)
+            {
+                que.push(root);
+            }
+    
+            while(!que.empty())
+            {
+                TreeNode* tmp_node=que.front();
+                que.pop();
+                if(tmp_node->left)
+                {
+                    que.push(tmp_node->left);
+                }
+                if(tmp_node->right)
+                {
+                    que.push(tmp_node->right);
+                }
+                
+                if(tmp_node->left&&!tmp_node->left->left&&!tmp_node->left->right)
+                {
+                    sum+=tmp_node->left->val;
+                }
+            }
+    
+            return sum;
+        }
+    };
+    ```
+
+##### （2）二刷 - 标记访问的左右方向
+
+```c++
+#define DIR_LEFT 0
+#define DIR_RIGHT 1
+class Solution {
+private:
+    int getLeftLeavesSum(TreeNode* root, const int leftOrRight) {
+        if (root == nullptr) {
+            return 0;
+        }
+        if (root->left == nullptr && root->right == nullptr &&
+            leftOrRight == DIR_LEFT) {
+            return root->val;
+        }
+
+        int leftSum = getLeftLeavesSum(root->left, DIR_LEFT);
+        int rightSum = getLeftLeavesSum(root->right, DIR_RIGHT);
+        return leftSum + rightSum;
+    }
+
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        int leftSum = getLeftLeavesSum(root->left,DIR_LEFT);
+        int rightSum=getLeftLeavesSum(root->right,DIR_RIGHT);
+
+        return leftSum+rightSum;
+    }
+};
 ```
